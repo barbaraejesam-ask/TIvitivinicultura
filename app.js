@@ -437,6 +437,72 @@ function renderRendimentoChart(data) {
   chartRendimento.render();
 }
 
+// 4. Sazonalidade (Progresso da Estimativa Mensal no Ano Selecionado)
+function renderSeasonalityChart() {
+  // Filter monthly data for the selected year
+  const monthlyData = ibgeGrapesData.monthly.filter(item => item.year === seasonalityYear);
+  
+  // Sort months chronologically
+  const months = monthlyData.map(item => item.month);
+  const values = monthlyData.map(item => item[currentTerritory][currentIndicator]);
+
+  // Translate label
+  let indLabel = '';
+  switch(currentIndicator) {
+    case 'producao': indLabel = 'Produção (Toneladas)'; break;
+    case 'area_plantada': indLabel = 'Área Plantada (Hectares)'; break;
+    case 'area_colhida': indLabel = 'Área Colhida (Hectares)'; break;
+    case 'rendimento_medio': indLabel = 'Rendimento Médio (Kg/Ha)'; break;
+  }
+
+  const options = {
+    series: [{
+      name: indLabel,
+      data: values
+    }],
+    chart: {
+      type: 'bar',
+      height: 350,
+      fontFamily: 'Poppins, sans-serif',
+      toolbar: { show: false }
+    },
+    colors: ['#D4AF37'],
+    plotOptions: {
+      bar: {
+        borderRadius: 4,
+        horizontal: true,
+        barHeight: '70%'
+      }
+    },
+    dataLabels: { enabled: false },
+    xaxis: {
+      labels: {
+        formatter: (val) => formatNum(val),
+        style: { colors: '#6C757D' }
+      }
+    },
+    yaxis: {
+      categories: months,
+      labels: { style: { colors: '#6C757D' } }
+    },
+    tooltip: {
+      y: {
+        formatter: (val) => formatNum(val)
+      }
+    },
+    grid: {
+      borderColor: '#E9ECEF',
+      strokeDashArray: 4
+    }
+  };
+
+  if (chartSazonalidade) {
+    chartSazonalidade.destroy();
+  }
+  chartSazonalidade = new ApexCharts(document.querySelector("#chart-sazonalidade"), options);
+  chartSazonalidade.render();
+}
+
 // 5. Tendência Futura da Produção com Projeção Linear (Regressão Linear)
 function renderTendenciaChart(data) {
   if (data.length === 0) return;
