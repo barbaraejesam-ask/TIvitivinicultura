@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pesquisa de Mercado da Produção de Uva em Santa Catarina - Série Histórica 2006–2026</title>
+  <!-- Meta tags SEO -->
+  <meta name="description" content="Dashboard interativo com dados históricos da produção de uva no Brasil e em Santa Catarina de 2006 a 2026.">
+  <meta name="keywords" content="vitivinicultura, produção de uva, Santa Catarina, IBGE, BI, LSPA">
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="style.css">
+  <!-- ApexCharts CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="header-content">
+      <div class="header-title">
+        <h1 id="main-title">Pesquisa de Mercado da Produção de Uva</h1>
+        <p id="main-subtitle">Série Histórica 2006–2026</p>
+      </div>
+      <div class="header-badge">
+        <i class="fa-solid fa-grapes"></i>
+        <span>Mercado Vitivinícola</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    
+    <!-- Sticky Filters Panel -->
+    <section class="filters-panel" id="filters-section">
+      <!-- Territory Filter -->
+      <div class="filter-group">
+        <label>Localidade</label>
+        <div class="segmented-control" id="territory-toggle">
+          <button class="segmented-btn active" data-value="sc">
+            <i class="fa-solid fa-map-location-dot"></i> Santa Catarina
+          </button>
+          <button class="segmented-btn" data-value="brasil">
+            <i class="fa-solid fa-earth-americas"></i> Brasil
+          </button>
+        </div>
+      </div>
+
+      <!-- Start Year Filter -->
+      <div class="filter-group">
+        <label for="start-year-select">Ano Inicial</label>
+        <select id="start-year-select" class="filter-control"></select>
+      </div>
+
+      <!-- End Year Filter -->
+      <div class="filter-group">
+        <label for="end-year-select">Ano Final</label>
+        <select id="end-year-select" class="filter-control"></select>
+      </div>
+
+      <!-- Indicator highlight Filter -->
+      <div class="filter-group">
+        <label for="indicator-select">Foco do Dashboard</label>
+        <select id="indicator-select" class="filter-control">
+          <option value="producao">Produção (Toneladas)</option>
+          <option value="area_plantada">Área Plantada (Hectares)</option>
+          <option value="area_colhida">Área Colhida (Hectares)</option>
+          <option value="rendimento_medio">Rendimento Médio (Kg/Ha)</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- KPIs Grid -->
+    <section class="kpis-grid" id="kpis-section">
+      <!-- KPI 1: Produção Total -->
+      <div class="kpi-card" id="kpi-producao">
+        <div class="kpi-header">
+          <span>Produção no Período</span>
+          <i class="fa-solid fa-wine-bottle"></i>
+        </div>
+        <div class="kpi-value" id="kpi-producao-val">-</div>
+        <div class="kpi-footer">
+          <span id="kpi-producao-trend" class="kpi-trend-up"><i class="fa-solid fa-arrow-trend-up"></i> -%</span>
+          <span>desde o ano inicial</span>
+        </div>
+      </div>
+
+      <!-- KPI 2: Área Plantada Total -->
+      <div class="kpi-card" id="kpi-area-plantada">
+        <div class="kpi-header">
+          <span>Área Plantada</span>
+          <i class="fa-solid fa-seedling"></i>
+        </div>
+        <div class="kpi-value" id="kpi-area-plantada-val">-</div>
+        <div class="kpi-footer">
+          <span id="kpi-area-plantada-trend" class="kpi-trend-up"><i class="fa-solid fa-arrow-trend-up"></i> -%</span>
+          <span>desde o ano inicial</span>
+        </div>
+      </div>
+
+      <!-- KPI 3: Área Colhida Total -->
+      <div class="kpi-card" id="kpi-area-colhida">
+        <div class="kpi-header">
+          <span>Área Colhida</span>
+          <i class="fa-solid fa-tractor"></i>
+        </div>
+        <div class="kpi-value" id="kpi-area-colhida-val">-</div>
+        <div class="kpi-footer">
+          <span id="kpi-area-colhida-trend" class="kpi-trend-up"><i class="fa-solid fa-arrow-trend-up"></i> -%</span>
+          <span>da área plantada (média)</span>
+        </div>
+      </div>
+
+      <!-- KPI 4: Rendimento Médio -->
+      <div class="kpi-card" id="kpi-rendimento">
+        <div class="kpi-header">
+          <span>Rendimento Médio</span>
+          <i class="fa-solid fa-weight-hanging"></i>
+        </div>
+        <div class="kpi-value" id="kpi-rendimento-val">-</div>
+        <div class="kpi-footer">
+          <span id="kpi-rendimento-trend" class="kpi-trend-up"><i class="fa-solid fa-circle-check"></i> Estável</span>
+          <span>kg por hectare</span>
+        </div>
+      </div>
+
+      <!-- KPI 5: Melhor e Pior Ano -->
+      <div class="kpi-card" id="kpi-recordes">
+        <div class="kpi-header">
+          <span>Melhor / Pior Ano</span>
+          <i class="fa-solid fa-ranking-star"></i>
+        </div>
+        <div class="kpi-value" id="kpi-recordes-val">-</div>
+        <div class="kpi-footer">
+          <span>Pior ano: </span><strong id="kpi-pior-ano">-</strong>
+        </div>
+      </div>
+
+      <!-- KPI 6: Crescimento Acumulado -->
+      <div class="kpi-card" id="kpi-crescimento">
+        <div class="kpi-header">
+          <span>Crescimento Acumulado</span>
+          <i class="fa-solid fa-chart-line"></i>
+        </div>
+        <div class="kpi-value" id="kpi-crescimento-val">-%</div>
+        <div class="kpi-footer">
+          <span>Entre início e fim do período</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Charts Grid -->
+    <section class="charts-grid">
+      <!-- 1. Evolução Histórica da Produção -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <div class="chart-title">
+            <h3><i class="fa-solid fa-chart-area"></i> Evolução da Produção</h3>
+          </div>
+        </div>
+        <div class="chart-body">
+          <div id="chart-producao-historica"></div>
+        </div>
+      </div>
+
+      <!-- 2. Comparação de Área Plantada e Colhida -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <div class="chart-title">
+            <h3><i class="fa-solid fa-chart-line"></i> Área Plantada vs. Colhida</h3>
+          </div>
+        </div>
+        <div class="chart-body">
+          <div id="chart-areas-comparacao"></div>
+        </div>
+      </div>
+
+      <!-- 3. Rendimento Médio -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <div class="chart-title">
+            <h3><i class="fa-solid fa-chart-bar"></i> Rendimento Médio Histórico</h3>
+          </div>
+        </div>
+        <div class="chart-body">
+          <div id="chart-rendimento-medio"></div>
+        </div>
+      </div>
+
+      <!-- 4. Sazonalidade (Progresso da Estimativa) -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <div class="chart-title">
+            <h3><i class="fa-solid fa-calendar-days"></i> Sazonalidade & Progresso Mensal</h3>
+          </div>
+          <div class="chart-actions">
+            <select id="seasonality-year-select" class="filter-control" style="padding: 0.25rem 0.5rem; font-size: 0.8rem; min-width: 90px;"></select>
+          </div>
+        </div>
+        <div class="chart-body">
+          <div id="chart-sazonalidade"></div>
+        </div>
+      </div>
+
+      <!-- 5. Tendência Futura da Produção -->
+      <div class="chart-card full-width">
+        <div class="chart-header">
+          <div class="chart-title">
+            <h3><i class="fa-solid fa-wand-magic-sparkles"></i> Projeção Linear da Produção (Próximos 5 Anos)</h3>
+          </div>
+        </div>
+        <div class="chart-body">
+          <div id="chart-tendencia-projetada"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Table Analítica -->
+    <section class="table-card">
+      <div class="table-header-row">
+        <div class="table-title">
+          <h3><i class="fa-solid fa-table"></i> Detalhamento dos Dados</h3>
+        </div>
+        <div class="table-search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="table-search-input" placeholder="Pesquisar ano ou dados...">
+        </div>
+      </div>
+      <div class="table-wrapper">
+        <table id="analytics-table">
+          <thead>
+            <tr>
+              <th data-sort="year" class="sort-asc">Ano <i class="fa-solid fa-sort"></i></th>
+              <th data-sort="producao">Produção (t) <i class="fa-solid fa-sort"></i></th>
+              <th data-sort="area_plantada">Área Plantada (ha) <i class="fa-solid fa-sort"></i></th>
+              <th data-sort="area_colhida">Área Colhida (ha) <i class="fa-solid fa-sort"></i></th>
+              <th data-sort="rendimento_medio">Rendimento Médio (kg/ha) <i class="fa-solid fa-sort"></i></th>
+            </tr>
+          </thead>
+          <tbody id="table-body">
+            <!-- Dynamic Rows -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>Fonte: IBGE (Levantamento Sistemático da Produção Agrícola - LSPA)</p>
+    <p>Pesquisa de Mercado da Produção de Uva em Santa Catarina &copy; 2026. Dashboard desenvolvido para fins acadêmicos.</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
